@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 """
-Created on Tue May  3 09:54:53 2016
+Created on Tue May  3 14:48:51 2016
 
 @author: Greg
 """
-
 import socket
-import os
-from SaltyFunctions import split_data
 from SaltyFunctions import FindNames
-from SaltyFunctions import FindBets
-from SaltyFunctions import RecordFightToDB
-
-
+from SaltyFunctions import split_data
+from SaltyFunctions import GetFighterStats
 
 
 """
@@ -41,62 +36,31 @@ s.send(bytes(("JOIN %s\r\n" % CHANNEL), "UTF-8"))
 
 midfight = True
 
-
-print ("Welcome to Greg's Saltybet Tracker")
-print (" ")
-
 while 1:
+
     readBuffer=s.recv(1024).decode("UTF-8")
     if readBuffer.find ( 'PING' ) != -1:
-       s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n'), "UTF-8"))
-       
-    #print (readBuffer)
-       
+        s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n'), "UTF-8"))
+
+
     if readBuffer.find('Bets are OPEN for ') != -1 and readBuffer.find('Team ') == -1:
         midfight = False
         try:
             players = split_data(readBuffer)
             name1, name2 = FindNames(players)
-            #fight = Fight(name1,name2)
-            
-            
         except(NameError):
             print ("Program started mid fight. The program will record the next fight.\n")
-            
-            
-            
-    if readBuffer.find('Bets are locked. ') != -1 and readBuffer.find('Team ') == -1 and midfight == False:
         
-        fighter1String, fighter2String = split_data(readBuffer)
-        bet1, bet2 = FindBets(fighter1String,fighter2String)
+        fighter1Stats = GetFighterStats("A-unagi")
         
-        print (fighter1String)
-        print (fighter2String)       
-       
-    if readBuffer.find(' wins! Payouts to') != -1 and midfight == False:
-        winner= readBuffer[readBuffer.find('#saltybet :') + 11:readBuffer.find(' wins! Payouts to')]
+        """
+        Determines the average betting ratio if there are recorded entries for that fighter
+        """
+        if len(fighter1Stats) != 0:
+            betRatios = [x[0]/(x[0]+x[1]) for x in fighter1Stats]
         
-        RecordFightToDB(name1,name2,bet1,bet2,winner)
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
-       
+            averageBetRatio = 0
+            for ratio in betRatios:
+                averageBetRatio += ratio 
+            averageBetRatio =averageBetRatio /len(betRatios)
+        

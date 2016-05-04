@@ -6,6 +6,51 @@ Created on Tue May  3 10:35:28 2016
 """
 import sqlite3
 
+
+"""
+Returns a list of Tuples. Tuple entries are (Bet For, Bet Against, Win/lose)
+The index of the list is fight number
+"""
+def GetFighterStats(name):
+    
+    conn = sqlite3.connect('Fighters.db')
+
+    c = conn.cursor()
+    
+    try:
+        c.execute("""SELECT CASE 
+            WHEN name1 = ? then Bet1
+            WHEN name2 = ? THEN Bet2
+        END
+        "BetFor",
+        CASE 
+            WHEN name1 = ? then Bet2
+            WHEN name2 = ? THEN Bet1
+        END
+        "BetAgainst",
+        CASE
+            WHEN winner = ? THEN "Won"
+            ELSE "Lost"
+        END
+        "Result"
+        FROM fights WHERE name1 = ? OR name2 =?""", (name,name,name,name,name,name,name))
+        
+        fighterStats = c.fetchall()
+    except():
+        print ("No Records of this fighter!")
+    if fighterStats == []:
+        print ("No Records of this fighter!")
+    else:
+        print (fighterStats)
+        
+    
+    conn.close()
+    return fighterStats    
+    
+
+#Here to test GetFighterStats
+fighterStuff = GetFighterStats("Sailor venus k")
+
 def RecordFightToDB(name1,name2,bet1,bet2,Winner):
     
     conn = sqlite3.connect('Fighters.db')
