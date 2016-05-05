@@ -40,6 +40,7 @@ s.send(bytes(("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME)), "UTF-8"))
 s.send(bytes(("JOIN %s\r\n" % CHANNEL), "UTF-8"))
 
 midfight = True
+newMatch = True
 
 
 print ("Welcome to Greg's Saltybet Tracker")
@@ -54,6 +55,7 @@ while 1:
        
     if readBuffer.find('Bets are OPEN for ') != -1 and readBuffer.find('Team ') == -1:
         midfight = False
+        newMatch = True
         try:
             players = split_data(readBuffer)
             name1, name2 = FindNames(players)
@@ -73,10 +75,11 @@ while 1:
         print (fighter1String)
         print (fighter2String)       
        
-    if readBuffer.find(' wins! Payouts to') != -1 and midfight == False:
+    if readBuffer.find(' wins! Payouts to') != -1 and midfight == False and newMatch == True:
         winner= readBuffer[readBuffer.find('#saltybet :') + 11:readBuffer.find(' wins! Payouts to')]
         
         RecordFightToDB(name1,name2,bet1,bet2,winner)
+        newMatch = False
        
        
        

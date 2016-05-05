@@ -49,7 +49,7 @@ def GetFighterStats(name):
     
 
 #Here to test GetFighterStats
-fighterStuff = GetFighterStats("Sailor venus k")
+#fighterStuff = GetFighterStats("Sailor venus k")
 
 def RecordFightToDB(name1,name2,bet1,bet2,Winner):
     

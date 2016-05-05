@@ -51,7 +51,7 @@ while 1:
         except(NameError):
             print ("Program started mid fight. The program will record the next fight.\n")
         
-        fighter1Stats = GetFighterStats("A-unagi")
+        fighter1Stats = GetFighterStats(name1)
         
         """
         Determines the average betting ratio if there are recorded entries for that fighter
