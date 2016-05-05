@@ -7,6 +7,37 @@ Created on Tue May  3 10:35:28 2016
 import sqlite3
 
 
+
+
+"""
+Determines the average betting ratio if there are recorded entries for that fighter
+"""
+def GetAverageRatio(fighterStats):
+    
+    if len(fighterStats) != 0:
+        betRatios = [x[0]/(x[0]+x[1]) for x in fighterStats]
+    
+        averageBetRatio = 0
+        for ratio in betRatios:
+            averageBetRatio += ratio 
+        averageBetRatio =averageBetRatio /len(betRatios)
+        
+        return averageBetRatio
+    else:
+        return 0
+        
+"""
+Count adds up all the wins. the count is then divided by the length of the fights list.
+"""
+def GetWinRatio(fighterStats):
+    count = 0
+    if len(fighterStats) != 0:
+        for fight in fighterStats:
+            if fight[2] == 'Won':
+                count+=1
+    
+    return count/len(fighterStats)
+
 """
 Returns a list of Tuples. Tuple entries are (Bet For, Bet Against, Win/lose)
 The index of the list is fight number
@@ -47,6 +78,31 @@ def GetFighterStats(name):
     conn.close()
     return fighterStats    
     
+
+"""
+Finds, calculates, and prints the fighter's stats
+"""
+
+def PrintFighterStats(fighterName):
+    
+    fighterStats = GetFighterStats(fighterName)
+    fighterAvgBetRatio = GetAverageRatio(fighterStats)
+    fighterWinRate = GetWinRatio(fighterStats)
+    
+    if fighterStats != []:
+        print (fighterName + "'s Stats:")
+        print ("Number of fights recorded: "+ str(len(fighterStats)))
+        print ("Win Ratio: "+ str(fighterWinRate))
+        print ("Betting Ratio: "+ str(fighterAvgBetRatio))
+        print ("")
+
+def TestPrintFighterStats():
+    PrintFighterStats("Wonder woman revolutions")
+    PrintFighterStats("Ssj goku z2 ex")
+    
+#TestPrintFighterStats()
+
+
 
 #Here to test GetFighterStats
 #fighterStuff = GetFighterStats("Sailor venus k")

@@ -7,7 +7,7 @@ Created on Tue May  3 14:48:51 2016
 import socket
 from SaltyFunctions import FindNames
 from SaltyFunctions import split_data
-from SaltyFunctions import GetFighterStats
+from SaltyFunctions import PrintFighterStats
 
 
 """
@@ -51,16 +51,6 @@ while 1:
         except(NameError):
             print ("Program started mid fight. The program will record the next fight.\n")
         
-        fighter1Stats = GetFighterStats(name1)
         
-        """
-        Determines the average betting ratio if there are recorded entries for that fighter
-        """
-        if len(fighter1Stats) != 0:
-            betRatios = [x[0]/(x[0]+x[1]) for x in fighter1Stats]
-        
-            averageBetRatio = 0
-            for ratio in betRatios:
-                averageBetRatio += ratio 
-            averageBetRatio =averageBetRatio /len(betRatios)
-        
+        PrintFighterStats(name1)
+        PrintFighterStats(name2)
