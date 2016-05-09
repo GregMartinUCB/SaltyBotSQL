@@ -36,7 +36,9 @@ def GetWinRatio(fighterStats):
             if fight[2] == 'Won':
                 count+=1
     
-    return count/len(fighterStats)
+        return count/len(fighterStats)
+    else:
+        return 0
 
 """
 Returns a list of Tuples. Tuple entries are (Bet For, Bet Against, Win/lose)
