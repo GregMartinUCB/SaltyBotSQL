@@ -34,10 +34,10 @@ PASSWORD=password #From http://twitchapps.com/tmi/
 
 s=socket.socket( )
 s.connect((HOST, PORT))
-s.send(bytes(("PASS oauth:%s\r\n" % PASSWORD), "UTF-8"))
-s.send(bytes(("NICK %s\r\n" % NICK), "UTF-8"))
-s.send(bytes(("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME)), "UTF-8"))
-s.send(bytes(("JOIN %s\r\n" % CHANNEL), "UTF-8"))
+s.send(bytes(("PASS oauth:%s\r\n" % PASSWORD)))
+s.send(bytes(("NICK %s\r\n" % NICK)))
+s.send(bytes(("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME))))
+s.send(bytes(("JOIN %s\r\n" % CHANNEL)))
 
 midfight = True
 newMatch = True

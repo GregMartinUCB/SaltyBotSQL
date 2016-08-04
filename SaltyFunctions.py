@@ -6,109 +6,129 @@ Created on Tue May  3 10:35:28 2016
 """
 import sqlite3
 
+class FightStats:
+    fighter1 = {'name':None,
+                'fightHistory': None,
+                'averageWinRatio':None,
+                'averageBetRatio':None}
+    fighter2 = fighter1
 
-
-
-"""
-Determines the average betting ratio if there are recorded entries for that fighter
-"""
-def GetAverageRatio(fighterStats):
+    @staticmethod
+    def GetFighterStats(name):
     
-    if len(fighterStats) != 0:
-        betRatios = [x[0]/(x[0]+x[1]) for x in fighterStats]
+        conn = sqlite3.connect('Fighters.db')
     
-        averageBetRatio = 0
-        for ratio in betRatios:
-            averageBetRatio += ratio 
-        averageBetRatio =averageBetRatio /len(betRatios)
+        c = conn.cursor()
         
-        return averageBetRatio
-    else:
-        return 0
+        try:
+            c.execute("""SELECT CASE 
+                WHEN name1 = ? then Bet1
+                WHEN name2 = ? THEN Bet2
+            END
+            "BetFor",
+            CASE 
+                WHEN name1 = ? then Bet2
+                WHEN name2 = ? THEN Bet1
+            END
+            "BetAgainst",
+            CASE
+                WHEN winner = ? THEN "Won"
+                ELSE "Lost"
+            END
+            "Result"
+            FROM fights WHERE name1 = ? OR name2 =?""", (name,name,name,name,name,name,name))
+            
+            fighterStats = c.fetchall()
+        except():
+            print ("No Records of this fighter!")
+        if fighterStats == []:
+            print ("No Records of this fighter!")
+        else:
+            print (fighterStats)
+            
         
-"""
-Count adds up all the wins. the count is then divided by the length of the fights list.
-"""
-def GetWinRatio(fighterStats):
-    count = 0
-    if len(fighterStats) != 0:
-        for fight in fighterStats:
-            if fight[2] == 'Won':
-                count+=1
-    
-        return count/len(fighterStats)
-    else:
-        return 0
+        conn.close()
+        return fighterStats    
 
-"""
-Returns a list of Tuples. Tuple entries are (Bet For, Bet Against, Win/lose)
-The index of the list is fight number
-"""
-def GetFighterStats(name):
-    
-    conn = sqlite3.connect('Fighters.db')
-
-    c = conn.cursor()
-    
-    try:
-        c.execute("""SELECT CASE 
-            WHEN name1 = ? then Bet1
-            WHEN name2 = ? THEN Bet2
-        END
-        "BetFor",
-        CASE 
-            WHEN name1 = ? then Bet2
-            WHEN name2 = ? THEN Bet1
-        END
-        "BetAgainst",
-        CASE
-            WHEN winner = ? THEN "Won"
-            ELSE "Lost"
-        END
-        "Result"
-        FROM fights WHERE name1 = ? OR name2 =?""", (name,name,name,name,name,name,name))
+    """
+    Determines the average betting ratio if there are recorded entries for that fighter
+    """
+    @staticmethod
+    def GetAverageRatio(fighterStats):
         
-        fighterStats = c.fetchall()
-    except():
-        print ("No Records of this fighter!")
-    if fighterStats == []:
-        print ("No Records of this fighter!")
-    else:
-        print (fighterStats)
+        if len(fighterStats) != 0:
+            betRatios = [x[0]/(x[0]+x[1]) for x in fighterStats]
         
+            averageBetRatio = 0
+            for ratio in betRatios:
+                averageBetRatio += ratio 
+            averageBetRatio =averageBetRatio /len(betRatios)
+            
+            return averageBetRatio
+        else:
+            return 0
+            
+    """
+    Count adds up all the wins. the count is then divided by the length of the fights list.
+    """
+    @staticmethod
+    def GetWinRatio(fighterStats):
+        count = 0
+        if len(fighterStats) != 0:
+            for fight in fighterStats:
+                if fight[2] == 'Won':
+                    count+=1
+        
+            return count/len(fighterStats)
+        else:
+            return 0
     
-    conn.close()
-    return fighterStats    
+
+
     
-
-"""
-Finds, calculates, and prints the fighter's stats
-"""
-
-def PrintFighterStats(fighterName):
+    """
+    Returns a list of Tuples. Tuple entries are (Bet For, Bet Against, Win/lose)
+    The index of the list is fight number
+    """
     
-    fighterStats = GetFighterStats(fighterName)
-    fighterAvgBetRatio = GetAverageRatio(fighterStats)
-    fighterWinRate = GetWinRatio(fighterStats)
     
-    if fighterStats != []:
-        print (fighterName + "'s Stats:")
-        print ("Number of fights recorded: "+ str(len(fighterStats)))
-        print ("Win Ratio: "+ str(fighterWinRate))
-        print ("Betting Ratio: "+ str(fighterAvgBetRatio))
-        print ("")
+    @staticmethod
+    def SetFightStats(name1,name2):
 
-def TestPrintFighterStats():
-    PrintFighterStats("Wonder woman revolutions")
-    PrintFighterStats("Ssj goku z2 ex")
+        fighter1 = FightStats.GetFighterStats(name1)
+        fighter2 = FightStats.GetFighterStats(name2)
+        
+        FightStats.fighter1['name'] = name1
+        FightStats.fighter1['fightHistory'] = fighter1
+        FightStats.fighter1['averageWinRatio'] = FightStats.GetAverageRatio(fighter1)
+        FightStats.fighter1['averageBetRatio'] = FightStats.GetWinRatio(fighter1)
+        
+        FightStats.fighter2['name'] = name2
+        FightStats.fighter2['fightHistory'] = fighter2
+        FightStats.fighter2['averageWinRatio'] = FightStats.GetAverageRatio(fighter2)
+        FightStats.fighter2['averageBetRatio'] = FightStats.GetWinRatio(fighter2)
+
+    @staticmethod
+    def PrintFighterStats():
+        
+        if FightStats.fighter1['fightHistory'] != []:
+            print (FightStats.fighter1['name'] + "'s Stats:")
+            print ("Number of fights recorded: "+ str(len(FightStats.fighter1['fightHistory'])))
+            print ("Win Ratio: "+ str(FightStats.fighter1['averageWinRatio']))
+            print ("Betting Ratio: "+ str(FightStats.fighter1['averageBetRatio']))
+            print ("")
+        if FightStats.fighter2['fightHistory'] != []:
+            print (FightStats.fighter2['name'] + "'s Stats:")
+            print ("Number of fights recorded: "+ str(len(FightStats.fighter2['fightHistory'])))
+            print ("Win Ratio: "+ str(FightStats.fighter2['averageWinRatio']))
+            print ("Betting Ratio: "+ str(FightStats.fighter2['averageBetRatio']))
+            print ("")
+            
+    @staticmethod
+    def TestPrintFighterStats():
+        FightStats.PrintFighterStats("Wonder woman revolutions")
+        FightStats.PrintFighterStats("Ssj goku z2 ex")
     
-#TestPrintFighterStats()
-
-
-
-#Here to test GetFighterStats
-#fighterStuff = GetFighterStats("Sailor venus k")
-
 def RecordFightToDB(name1,name2,bet1,bet2,Winner):
     
     conn = sqlite3.connect('Fighters.db')
