@@ -1,17 +1,23 @@
 <!doctype html>
 <title>Flaskr</title>
-<link rel=stylesheet type=text/css href="{{ url_for('static', filename='style.css') }}">
-<div class=page>
-    <h1>Flaskr</h1>
-    <div class=metanav>
-        {% if not session.logged_in %}
-        <a href="{{ url_for('login') }}">log in</a>
-        {% else %}
-        <a href="{{ url_for('logout') }}">log out</a>
-        {% endif %}
+<link rel=stylesheet type=text/css href="{{ url_for('static', filename='css/bootstrap.min.css') }}">
+<head>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bootstrap.min.js') }}"></script>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.css">
+
+    <!-- Latest compiled and minified JavaScript -->
+    <script src="//cdnjs.cloudflare.com/ajax/libs/bootstrap-table/1.11.0/bootstrap-table.min.js"></script>
+</head>
+<body>
+    <div class=page>
+        <h1 class="text-center">SaltyBot</h1>
+
+        <div class="">
+            {% block fighter %}{% endblock %}
+        </div>
+
+
     </div>
-    {% for message in get_flashed_messages() %}
-    <div class=flash>{{ message }}</div>
-    {% endfor %}
-    {% block body %}{% endblock %}
-</div>
+</body>

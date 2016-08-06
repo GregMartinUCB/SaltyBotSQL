@@ -11,7 +11,10 @@ class FightStats:
                 'fightHistory': None,
                 'averageWinRatio':None,
                 'averageBetRatio':None}
-    fighter2 = fighter1
+    fighter2 = {'name':None,
+                'fightHistory': None,
+                'averageWinRatio':None,
+                'averageBetRatio':None}
 
     @staticmethod
     def GetFighterStats(name):
@@ -57,12 +60,12 @@ class FightStats:
     def GetAverageRatio(fighterStats):
         
         if len(fighterStats) != 0:
-            betRatios = [x[0]/(x[0]+x[1]) for x in fighterStats]
+            betRatios = [x[0]/float(x[0]+x[1]) for x in fighterStats]
         
-            averageBetRatio = 0
+            averageBetRatio = 0.0
             for ratio in betRatios:
-                averageBetRatio += ratio 
-            averageBetRatio =averageBetRatio /len(betRatios)
+                averageBetRatio += float(ratio) 
+            averageBetRatio =averageBetRatio /float(len(betRatios))
             
             return averageBetRatio
         else:
@@ -79,7 +82,7 @@ class FightStats:
                 if fight[2] == 'Won':
                     count+=1
         
-            return count/len(fighterStats)
+            return count/float(len(fighterStats))
         else:
             return 0
     
@@ -128,6 +131,11 @@ class FightStats:
     def TestPrintFighterStats():
         FightStats.PrintFighterStats("Wonder woman revolutions")
         FightStats.PrintFighterStats("Ssj goku z2 ex")
+
+    @staticmethod
+    def TestSetFighter():
+        #use two known fighters.
+        FightStats.SetFightStats("Wonder woman revolutions","Ssj goku z2 ex")
     
 def RecordFightToDB(name1,name2,bet1,bet2,Winner):
     

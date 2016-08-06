@@ -8,11 +8,13 @@ Created on Wed Aug  3 14:43:52 2016
 import os
 import sqlite3
 from flask import (Flask, request, session, g, redirect,
-                  url_for, abort, render_template, flash)
+                  url_for, abort, render_template, flash, jsonify)
 
 from SaltyFunctions import *
+from SaltyFunctions import FightStats
 
 app = Flask(__name__)
+app.config['DEBUG'] = True
 app.config.from_object(__name__)
 
 app.config.update(dict(
@@ -57,8 +59,30 @@ def initdb_command():
     
 @app.route('/')
 def show_entries():
-    db = get_db()
-    cur = db.execute('select title, text from entries order by id desc')
-    entries = cur.fetchall()
-    return render_template('show_entries.html', entries=entries)
+    
+    return render_template('fighters.html')
+
+@app.route('/fightData')
+def GetFightData():
+    fighter = request.args.get('fighter', 0, type = int)
+    
+    print FightStats.fighter1
+
+    if fighter == 1:
+        return jsonify(FightStats.fighter1)
+    if fighter == 2:
+        return jsonify(FightStats.fighter2)
+    else:
+        return jsonify("No Fighter Found")
+    
+@app.route('/testFight')
+def TestFight():
+    FightStats.TestSetFighter()
+    fighter = request.args.get('fighter', 0, type = int)
+    if fighter == 1:
+        return jsonify(FightStats.fighter1)
+    if fighter == 2:
+        return jsonify(FightStats.fighter2)
+    else:
+        return jsonify("No Fighter Found")
     

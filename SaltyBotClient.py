@@ -34,7 +34,7 @@ try:
     s.send(bytes(("NICK %s\r\n" % NICK)))
     s.send(bytes(("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME))))
     s.send(bytes(("JOIN %s\r\n" % CHANNEL)))
-except TypeError:
+except TypeError as e:
     s.send(bytes(("PASS oauth:%s\r\n" % PASSWORD), 'utf8'))
     s.send(bytes(("NICK %s\r\n" % NICK), 'utf8'))
     s.send(bytes(("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME)), 'utf8'))
@@ -49,8 +49,10 @@ while 1:
         
         readBuffer=s.recv(1024).decode("UTF-8")
         if readBuffer.find ( 'PING' ) != -1:
-            s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n'), "UTF-8"))
-    
+            try:
+                s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n'), "UTF-8"))
+            except:
+                s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n')))
     
         if readBuffer.find('Bets are OPEN for ') != -1 and readBuffer.find('Team ') == -1:
             midfight = False

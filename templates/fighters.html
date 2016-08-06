@@ -1,0 +1,85 @@
+﻿{% extends "layout.html" %}
+{% block fighter %}
+
+<div class="col-sm-6 col-md-6 col-lg-6 text-center">
+    <h2 id="name1">NAME: </h2>
+    <h3 id="winRate1">Win Rate: </h3>
+    <h3 id="betRatio1">Average Bet Ratio: </h3>
+    
+    <h3> Fight History (Bet for, Bet Against, Win/Lose)</h3>
+    <table class="table-responsive" id="fighter1"></table>
+   
+
+</div>
+<div class="col-sm-6 col-md-6 col-lg-6 text-center">
+    <h2 id="name2">NAME: </h2>
+    <h3 id="winRate2">Win Rate: </h3>
+    <h3 id="betRatio2">Average Bet Ratio: </h3>
+    <h3> Fight History (Bet for, Bet Against, Win/Lose)</h3>
+    <table class="table-responsive" id="fighter2"></table>
+    
+
+</div>
+
+<script>
+    $.get("testFight", { fighter: 1 }, function (fighter1Data) {
+        console.log(typeof(fighter1Data['fightHistory']))
+        document.getElementById("name1").innerHTML += fighter1Data['name'];
+        document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'];
+        document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'];
+        var fightHistory = []
+        for (i = 0; i < fighter1Data['fightHistory'].length; i++) {
+            fightHistory.push({
+                betFor: fighter1Data['fightHistory'][i][0],
+                betAgainst: fighter1Data['fightHistory'][i][1],
+                winLose: fighter1Data['fightHistory'][i][2]
+            })
+        }
+        $('#fighter1').bootstrapTable({
+            columns: [{
+                field: 'winLose',
+                title: 'Win/Lose'
+            },
+            {
+                field: 'betFor',
+                title: 'Bet For'
+            }, {
+                field: 'betAgainst',
+                title: 'Bet Against'
+            }],
+            data: fightHistory
+        })
+    });
+
+    $.get("testFight", { fighter: 2 }, function (fighter2Data) {
+        document.getElementById("name2").innerHTML += fighter2Data['name'];
+        document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'];
+        document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'];
+        var fightHistory = []
+        for (i = 0; i < fighter2Data['fightHistory'].length; i++) {
+            fightHistory.push( {
+                 betFor : fighter2Data['fightHistory'][i][0],
+                 betAgainst : fighter2Data['fightHistory'][i][1],
+                 winLose : fighter2Data['fightHistory'][i][2]
+            })
+        }
+        $('#fighter2').bootstrapTable({
+            columns: [ {
+                field: 'winLose',
+                title: 'Win/Lose'
+            },
+            {
+                field: 'betFor',
+                title: 'Bet For'
+            }, {
+                field: 'betAgainst',
+                title: 'Bet Against'
+            }],
+            data: fightHistory
+        })
+        console.log(fightHistory)
+    });
+</script>
+
+{%endblock%}
+
