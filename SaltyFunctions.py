@@ -103,13 +103,13 @@ class FightStats:
         
         FightStats.fighter1['name'] = name1
         FightStats.fighter1['fightHistory'] = fighter1
-        FightStats.fighter1['averageWinRatio'] = FightStats.GetAverageRatio(fighter1)
-        FightStats.fighter1['averageBetRatio'] = FightStats.GetWinRatio(fighter1)
+        FightStats.fighter1['averageWinRatio'] = FightStats.GetWinRatio(fighter1)
+        FightStats.fighter1['averageBetRatio'] = FightStats.GetAverageRatio(fighter1) 
         
         FightStats.fighter2['name'] = name2
         FightStats.fighter2['fightHistory'] = fighter2
-        FightStats.fighter2['averageWinRatio'] = FightStats.GetAverageRatio(fighter2)
-        FightStats.fighter2['averageBetRatio'] = FightStats.GetWinRatio(fighter2)
+        FightStats.fighter2['averageWinRatio'] = FightStats.GetWinRatio(fighter2)
+        FightStats.fighter2['averageBetRatio'] = FightStats.GetAverageRatio(fighter2)
 
     @staticmethod
     def PrintFighterStats():
@@ -137,18 +137,7 @@ class FightStats:
         #use two known fighters.
         FightStats.SetFightStats("Wonder woman revolutions","Ssj goku z2 ex")
     
-def RecordFightToDB(name1,name2,bet1,bet2,Winner):
-    
-    conn = sqlite3.connect('Fighters.db')
 
-    c = conn.cursor()
-    
-    rowValues = (name1,name2,bet1,bet2,Winner)
-    
-    c.execute("INSERT INTO fights VALUES (?,?,?,?,?)", rowValues)
-    
-    conn.commit()
-    conn.close()
 
 
 def TestRecordFightToDB():
