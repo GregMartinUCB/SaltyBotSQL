@@ -47,7 +47,7 @@ def RecordFightToDB(fighter1,fighter2,fight,Winner):
 
 def GetFighterStats(fighter):
 
-    history = Fight.query.filter(Fight.fighter1 == fighter | Fight.fighter2 == fighter)
+    history = Fight.query.filter(Fight.fighter1 == fighter.id | Fight.fighter2 == fighter.id)
 
     betFor = []
     betAgainst = []
