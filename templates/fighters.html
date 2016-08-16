@@ -6,7 +6,7 @@
     <h3 id="winRate1">Win Rate: </h3>
     <h3 id="betRatio1">Average Bet Ratio: </h3>
     
-    <h3> Fight History (Bet for, Bet Against, Win/Lose)</h3>
+    <h3> Fight History </h3>
     <table class="table-responsive" id="fighter1"></table>
    
 
@@ -15,7 +15,7 @@
     <h2 id="name2">NAME: </h2>
     <h3 id="winRate2">Win Rate: </h3>
     <h3 id="betRatio2">Average Bet Ratio: </h3>
-    <h3> Fight History (Bet for, Bet Against, Win/Lose)</h3>
+    <h3> Fight History </h3>
     <table class="table-responsive" id="fighter2"></table>
     
 
@@ -24,20 +24,27 @@
 <script>
     //To test set the url to testFight
     $.get("fightData", { fighter: 1 }, function (fighter1Data) {
-        console.log((fighter1Data))
         document.getElementById("name1").innerHTML += fighter1Data['name'];
-        document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'];
-        document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'];
+        document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'].toFixed(3);
+        document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'].toFixed(3);
+        var fightHistDict = fighter1Data['fightHistory']
         var fightHistory = []
-        for (i = 0; i < fighter1Data['fightHistory'].length; i++) {
+        for (i = 0; i < fightHistDict.length; i++) {
             fightHistory.push({
-                betFor: fighter1Data['fightHistory'][i][0],
-                betAgainst: fighter1Data['fightHistory'][i][1],
-                winLose: fighter1Data['fightHistory'][i][2]
+                name: fightHistDict[i]['opponentName'],
+                betFor: fightHistDict[i]['betFor'],
+                betAgainst: fightHistDict[i]['betAgainst'],
+                winLose: fightHistDict[i]['winLose']
             })
         }
+        console.log((fightHistory[0]))
+
         $('#fighter1').bootstrapTable({
             columns: [{
+                field: 'name',
+                title: 'Opponent Name'
+            },
+            {
                 field: 'winLose',
                 title: 'Win/Lose'
             },
@@ -54,18 +61,25 @@
 
     $.get("fightData", { fighter: 2 }, function (fighter2Data) {
         document.getElementById("name2").innerHTML += fighter2Data['name'];
-        document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'];
-        document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'];
+        document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'].toFixed(3);
+        document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'].toFixed(3);
+        var fightHistDict = fighter2Data['fightHistory']
+
         var fightHistory = []
-        for (i = 0; i < fighter2Data['fightHistory'].length; i++) {
+        for (i = 0; i < fightHistDict.length; i++) {
             fightHistory.push( {
-                 betFor : fighter2Data['fightHistory'][i][0],
-                 betAgainst : fighter2Data['fightHistory'][i][1],
-                 winLose : fighter2Data['fightHistory'][i][2]
+                 name:fightHistDict[i]['opponentName'],
+                 betFor: fightHistDict[i]['betFor'],
+                 betAgainst: fightHistDict[i]['betAgainst'],
+                 winLose: fightHistDict[i]['winLose']
             })
         }
         $('#fighter2').bootstrapTable({
-            columns: [ {
+            columns: [{
+                field: 'name',
+                title: 'Opponent Name'
+            },
+            {
                 field: 'winLose',
                 title: 'Win/Lose'
             },
@@ -78,7 +92,6 @@
             }],
             data: fightHistory
         })
-        console.log(fightHistory)
     });
 </script>
 

@@ -16,3 +16,10 @@ def init_db():
     # you will have to import them first before calling init_db()
     import models
     Base.metadata.create_all(bind=engine)
+
+#def clean_db():
+#    from models import Fight, Fighter
+#    fightsToRemove = Fight.query.filter_by(time = None)
+
+#    db_session.delete(fightsToRemove)
+#    db_session.commit()

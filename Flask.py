@@ -12,6 +12,7 @@ from flask import (Flask, request, session, g, redirect,
 
 from SaltyFunctions import *
 from database import db_session
+from models import Fight, Fighter
 
 
 app = Flask(__name__)
@@ -26,6 +27,39 @@ app.config.update(dict(
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
+#arguement is a SQLAlchemy row object, returns array of dictionaries
+def FightHistoryToJson(fighterData):
+    #Finds all fights that given fighter was in
+    histories = db_session.query(Fight).filter(or_(Fight.fighter1_id ==fighterData.id,
+                                                    Fight.fighter2_id == fighterData.id))
+    
+    appendedJsonHistory = []
+    for fightHistory in histories:
+        winLose = None
+        #Must determine if the fighter was player 1 or player 2 and set bets occordingly
+        if fightHistory.fighter1_id == fighterData.id:
+            opponentId = fightHistory.fighter2_id
+            betFor = fightHistory.bet1
+            betAgainst = fightHistory.bet2
+        else:
+            opponentId = fightHistory.fighter1_id
+            betFor = fightHistory.bet2
+            betAgainst = fightHistory.bet1
+
+        if fightHistory.winner_id == fighterData.id:
+            winLose = True
+        else:
+            winLose = False
+
+        historyJson = {'opponentName':db_session.query(Fighter).get(opponentId).name,
+                        'winLose': winLose,
+                        'betFor':betFor,
+                        'betAgainst':betAgainst}
+        appendedJsonHistory.append(historyJson)
+
+        return appendedJsonHistory
+
+#For closing the database session when the app closes down
 @app.teardown_appcontext
 def shutdown_session(exception=None):
     db_session.remove()
@@ -37,27 +71,39 @@ def show_entries():
 
 @app.route('/fightData')
 def GetFightData():
-    from SaltyFunctions import FightStats
+
+    currentFight = db_session.query(Fight).filter_by(currentFight = 1).first()
     fighter = request.args.get('fighter', 0, type = int)
-    
-    print FightStats.fighter1
 
     if fighter == 1:
-        return jsonify(FightStats.fighter1)
-    if fighter == 2:
-        return jsonify(FightStats.fighter2)
+        fighterData = db_session.query(Fighter).get(currentFight.fighter1_id)
     else:
-        return jsonify("No Fighter Found")
+        fighterData = db_session.query(Fighter).get(currentFight.fighter2_id)
+
+    history = FightHistoryToJson(fighterData)
+
+    jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
+                    'averageBetRatio': fighterData.betRatio,
+                    'fightHistory':history}
+    return jsonify(jsonToSend)
     
 @app.route('/testFight')
 def TestFight():
-    from SaltyFunctions import FightStats
-    FightStats.TestSetFighter()
+    #Using fight number 11 for test. Real one will get the current fight.
+    currentFight = db_session.query(Fight).get(11)
     fighter = request.args.get('fighter', 0, type = int)
+
     if fighter == 1:
-        return jsonify(FightStats.fighter1)
-    if fighter == 2:
-        return jsonify(FightStats.fighter2)
+        fighterData = db_session.query(Fighter).get(currentFight.fighter1_id)
     else:
-        return jsonify("No Fighter Found")
+        fighterData = db_session.query(Fighter).get(currentFight.fighter2_id)
+
+    history = FightHistoryToJson(fighterData)
+
+    jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
+                    'averageBetRatio': fighterData.betRatio,
+                    'fightHistory':history}
+    return jsonify(jsonToSend)
+    
+
     
