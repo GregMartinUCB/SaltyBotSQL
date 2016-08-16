@@ -7,84 +7,16 @@ Created on Tue May  3 09:54:53 2016
 
 import socket
 import os
-import datetime
-import numpy as np
-from SaltyFunctions import split_data
-from SaltyFunctions import FindNames
-from SaltyFunctions import FindBets
+from SaltyFunctions import split_data, FindNames, GetAverageBetRatio, GetFighterStats
+from SaltyFunctions import FindBets, GetWinRate, RecordFightToDB
 from models import Fight, Fighter
 from database import db_session
 
 
-def RecordFightToDB(fighter1,fighter2,fight,Winner):
-    
-    #set current fight to false.
-    fight.currentFight = False
-    #Identify winner and save as foreign key
-    if Winner == fighter1.name:
-        fight.winner = fighter1
-    elif Winner == fighter2.name:
-        fight.winner = fighter2
-    else:
-        print ("Unable to match declared winner with a fighter.")
-        return
-
-    fight.time = datetime.datetime.now()
-    db_session.add(fight)
-
-    #determine ratios and averages
-    avgBetRatio1, winRate1 = GetFighterStats(fighter1)
-    avgBetRatio2, winRate2 = GetFighterStats(fighter2)
-
-    #Save fighter values.
-    fighter1.winRate = winRate1
-    fighter1.betRatio = avgBetRatio1
-    fighter2.winRate = winRate2
-    fighter2.betRatio = avgBetRatio2
-
-    db_session.add_all([fighter1,fighter2])
-    db_session.commit()
-
-def GetFighterStats(fighter):
-
-    history = Fight.query.filter(Fight.fighter1 == fighter.id | Fight.fighter2 == fighter.id)
-
-    betFor = []
-    betAgainst = []
-    winLose = []
-    for pastFight in history:
-        if pastFight.winner == fighter:
-            winLose.append(1)
-        else:
-            winLose.append(0)
-
-        if pastFight.fighter1 == fighter:
-            betFor.append(pastFight.bet1)
-            betAgainst.append(pastFight.bet2)
-        else:
-            betFor.append(pastFight.bet2)
-            betAgainst.append(pastFight.bet1)
-
-    avgBetRatio = GetAverageBetRatio(betFor, betAgainst)
-    winRate = GetWinRate(winLose)
-
-    return avgBetRatio, winRate
-
-def GetAverageBetRatio(betFor, betAgainst):
-    betRatios = []
-    for i in range(len(betFor)):
-        betRatios.append(betFor[i]/float(betFor[i]+betAgainst[i]))
-
-    return np.mean(betRatios)
-
-def GetWinRate(winLose):
-
-    return np.mean(winLose)
-
 
 
 """
-Log in information.
+Log in information. Stored in confidential.txt which is ignored by git
 """
 with open('confidential.txt','r') as loginInfo:
     nickname = loginInfo.readline().replace('\n','')
@@ -121,21 +53,26 @@ while 1:
     readBuffer=s.recv(1024).decode("UTF-8")
     
     if readBuffer.find ( 'PING' ) != -1:
+        #This try and except is neccessary for switching between python 2.7 and 3
+        #Python 3 needs the second arguement for bytes function
         try:
             s.send ( bytes(('PONG ' + readBuffer.split() [ 1 ] + '\r\n'), "UTF-8"))
         except TypeError:
             s.send ( bytes('PONG ' + readBuffer.split() [ 1 ] + '\r\n'))
 
     #print (readBuffer)
-       
+      
+    #Filter out team matches. Unable to determine individual fighters from teams
     if readBuffer.find('Bets are OPEN for ') != -1 and readBuffer.find('Team ') == -1:
         midfight = False
         newMatch = True
         try:
+            #Split the string and find the fighter's names
             players = split_data(readBuffer)
             name1, name2 = FindNames(players)
             
             #Find the fighter by name, if none found make one and add it.
+            #This query assumes that a fighters name is Unique. This is unverified but highly likely
             if Fighter.query.filter(Fighter.name == name1).count()>0:
                 fighter1 = Fighter.query.filter(Fighter.name == name1).first()
             else:
@@ -149,17 +86,19 @@ while 1:
                 db_session.add(fighter2)
             
             db_session.commit()
-            fight = Fight(fighter1.id, fighter2.id)
+            fight = Fight(fighter1, fighter2)
             db_session.add(fight)
             db_session.commit()
 
-        except(NameError):
+        except(Exception):
+            print Exception.message
             print ("Program started mid fight. The program will record the next fight.\n")
             
             
             
     if readBuffer.find('Bets are locked. ') != -1 and readBuffer.find('Team ') == -1 and midfight == False:
         
+        #Find bet info from string
         fighter1String, fighter2String = split_data(readBuffer)
         bet1, bet2 = FindBets(fighter1String,fighter2String)
         fight.bet1 = bet1
