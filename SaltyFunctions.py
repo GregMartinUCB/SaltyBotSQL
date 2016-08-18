@@ -20,8 +20,12 @@ def RecordFightToDB(fighter1,fighter2,fight,Winner):
     #Identify winner and save as foreign key
     if Winner == fighter1.name:
         fight.winner = fighter1
+        fighter1.streak += 1
+        fighter2.streak -= 1
     elif Winner == fighter2.name:
         fight.winner = fighter2
+        fighter2.streak += 1
+        fighter1.streak -= 1
     else:
         print ("Unable to match declared winner with a fighter.")
         return
@@ -162,3 +166,46 @@ def FindBets(player1Sentence, player2Sentence):
     bet2 = float(player2Sentence[bet2Start:].replace(',',''))
         
     return bet1, bet2
+
+#Find and record the fighters' winning and or loosing streaks.
+def FindStreak(player1String, player2String):
+
+    start1 = player1String.find(' (')+2
+    start2 = player2String.find(' (')+2
+
+    end1 = player1String.find(') -')
+    end2 = player2String.find(') -')
+
+    try:
+        streak1 = int(player1String[start1:end1])
+        streak2 = int(player2String[start2:end2])
+    except:
+        print Exception.message
+        print ''
+        print player1String[start1:end1]
+        print player1String[start1:end1]
+        return
+
+    return streak1, streak2
+
+def CommitStreakData(fight, string1, string2):
+
+    try:
+        streak1, streak2 = FindStreak(string1, string2)
+        fighter1 = db_session.query(Fighter).get(fight.fighter1_id)
+        fighter2 = db_session.query(Fighter).get(fight.fighter2_id)
+
+        fighter1.streak = streak1
+        fighter2.streak = streak2
+
+        db_session.add_all([fighter1,fighter2])
+        db_session.commit()
+    except(TypeError):
+        print ("Error has occured when parsing the player string. " + 
+                "Possibly no streak was presented. This happens in certain modes.")
+
+    
+
+    return
+
+        

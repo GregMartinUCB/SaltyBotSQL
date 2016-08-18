@@ -4,6 +4,7 @@
 <div class="col-sm-6 col-md-6 col-lg-6 text-center">
     <h2 id="name1">NAME: </h2>
     <h3 id="winRate1">Win Rate: </h3>
+    <h3 id="streak1">Win/Lose Streak: </h3>
     <h3 id="betRatio1">Average Bet Ratio: </h3>
     
     <h3> Fight History </h3>
@@ -14,6 +15,7 @@
 <div class="col-sm-6 col-md-6 col-lg-6 text-center">
     <h2 id="name2">NAME: </h2>
     <h3 id="winRate2">Win Rate: </h3>
+    <h3 id="streak2">Win/Lose Streak: </h3>
     <h3 id="betRatio2">Average Bet Ratio: </h3>
     <h3> Fight History </h3>
     <table class="table-responsive" id="fighter2"></table>
@@ -25,6 +27,7 @@
     //To test set the url to testFight
     $.get("fightData", { fighter: 1 }, function (fighter1Data) {
         document.getElementById("name1").innerHTML += fighter1Data['name'];
+        document.getElementById("streak1").innerHTML += fighter1Data['streak'];
         document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'].toFixed(3);
         document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'].toFixed(3);
         var fightHistDict = fighter1Data['fightHistory']
@@ -61,6 +64,7 @@
 
     $.get("fightData", { fighter: 2 }, function (fighter2Data) {
         document.getElementById("name2").innerHTML += fighter2Data['name'];
+        document.getElementById("streak2").innerHTML += fighter2Data['streak'];
         document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'].toFixed(3);
         document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'].toFixed(3);
         var fightHistDict = fighter2Data['fightHistory']

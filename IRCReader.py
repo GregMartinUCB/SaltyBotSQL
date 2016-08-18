@@ -8,7 +8,7 @@ Created on Tue May  3 09:54:53 2016
 import socket
 import os
 from SaltyFunctions import split_data, FindNames, GetAverageBetRatio, GetFighterStats
-from SaltyFunctions import FindBets, GetWinRate, RecordFightToDB
+from SaltyFunctions import FindBets, GetWinRate, RecordFightToDB, CommitStreakData
 from models import Fight, Fighter
 from database import db_session
 
@@ -103,12 +103,15 @@ while 1:
         bet1, bet2 = FindBets(fighter1String,fighter2String)
         fight.bet1 = bet1
         fight.bet2 = bet2
+
+        #Add fight to database then commit the streaks
         db_session.add(fight)
+        CommitStreakData(fight, fighter1String, fighter2String)
         db_session.commit()
 
         print (fighter1String)
-        print (fighter2String)       
-       
+        print (fighter2String)
+               
     if readBuffer.find(' wins! Payouts to') != -1 and midfight == False and newMatch == True:
         winner= readBuffer[readBuffer.find('#saltybet :') + 11:readBuffer.find(' wins! Payouts to')]
         

@@ -84,6 +84,7 @@ def GetFightData():
 
     jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
                     'averageBetRatio': fighterData.betRatio,
+                    'streak': fighterData.streak,
                     'fightHistory':history}
     return jsonify(jsonToSend)
     

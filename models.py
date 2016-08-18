@@ -11,6 +11,7 @@ class Fighter(Base):
     name = Column(String(75), unique = True)
     winRate = Column(Float())
     betRatio = Column(Float())
+    streak = Column(Integer())
 
 
 
