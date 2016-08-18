@@ -20,12 +20,25 @@ def RecordFightToDB(fighter1,fighter2,fight,Winner):
     #Identify winner and save as foreign key
     if Winner == fighter1.name:
         fight.winner = fighter1
-        fighter1.streak += 1
-        fighter2.streak -= 1
+        try:
+            fighter1.streak += 1
+        except(TypeError):
+            print "No streak found. Current fight mode did not give one."
+        try:
+            fighter2.streak -= 1
+        except(TypeError):
+            print "No streak found. Current fight mode did not give one."
+
     elif Winner == fighter2.name:
         fight.winner = fighter2
-        fighter2.streak += 1
-        fighter1.streak -= 1
+        try:
+            fighter2.streak += 1
+        except(TypeError):
+            print "No streak found. Current fight mode did not give one."
+        try:
+            fighter1.streak -= 1
+        except(TypeError):
+            print "No streak found. Current fight mode did not give one."
     else:
         print ("Unable to match declared winner with a fighter.")
         return

@@ -1,1 +1,9 @@
+# Virtualenv
+env
+.Python
+include
+lib
+
+
+
 confidential.txt
