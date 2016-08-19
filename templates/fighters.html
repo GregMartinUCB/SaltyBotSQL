@@ -24,8 +24,8 @@
 </div>
 
 <script>
-    //To test set the url to testFight
-    $.get("testFight", { fighter: 1 }, function (fighter1Data) {
+    //To test set the url to testFight, fightData for normal usage
+    $.get("fightData", { fighter: 1 }, function (fighter1Data) {
         document.getElementById("name1").innerHTML += fighter1Data['name'];
         document.getElementById("streak1").innerHTML += fighter1Data['streak'];
         document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'].toFixed(3);
@@ -62,7 +62,7 @@
         })
     });
 
-    $.get("testFight", { fighter: 2 }, function (fighter2Data) {
+    $.get("fightData", { fighter: 2 }, function (fighter2Data) {
         document.getElementById("name2").innerHTML += fighter2Data['name'];
         document.getElementById("streak2").innerHTML += fighter2Data['streak'];
         document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'].toFixed(3);
