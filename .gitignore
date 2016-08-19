@@ -4,6 +4,8 @@ env
 include
 lib
 
+#Unwanted Python
+.pyc
 
 
 confidential.txt
