@@ -28,8 +28,14 @@
     $.get("fightData", { fighter: 1 }, function (fighter1Data) {
         document.getElementById("name1").innerHTML += fighter1Data['name'];
         document.getElementById("streak1").innerHTML += fighter1Data['streak'];
-        document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'].toFixed(3);
-        document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'].toFixed(3);
+        try {
+            document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'].toFixed(3);
+            document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'].toFixed(3);
+        }
+        catch (TypeError) {
+            document.getElementById("winRate1").innerHTML += fighter1Data['averageWinRatio'];
+            document.getElementById("betRatio1").innerHTML += fighter1Data['averageBetRatio'];
+        }
         var fightHistDict = fighter1Data['fightHistory']
         var fightHistory = []
         for (i = 0; i < fightHistDict.length; i++) {
@@ -61,22 +67,30 @@
             data: fightHistory
         })
     });
-
+    
     $.get("fightData", { fighter: 2 }, function (fighter2Data) {
         document.getElementById("name2").innerHTML += fighter2Data['name'];
         document.getElementById("streak2").innerHTML += fighter2Data['streak'];
-        document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'].toFixed(3);
-        document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'].toFixed(3);
-        var fightHistDict = fighter2Data['fightHistory']
+        try{
+            document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'].toFixed(3);
+            document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'].toFixed(3);
+        }
+        catch (TypeError) {
+            document.getElementById("winRate2").innerHTML += fighter2Data['averageWinRatio'];
+            document.getElementById("betRatio2").innerHTML += fighter2Data['averageBetRatio'];
+        }
 
-        var fightHistory = []
+        var fightHistDict = fighter2Data['fightHistory'];
+        $.fightNumber = fighter2Data['fightNumber'];
+        console.log(fighter2Data['fightNumber']);
+        var fightHistory = [];
         for (i = 0; i < fightHistDict.length; i++) {
-            fightHistory.push( {
-                 name:fightHistDict[i]['opponentName'],
-                 betFor: fightHistDict[i]['betFor'],
-                 betAgainst: fightHistDict[i]['betAgainst'],
-                 winLose: fightHistDict[i]['winLose']
-            })
+            fightHistory.push({
+                name: fightHistDict[i]['opponentName'],
+                betFor: fightHistDict[i]['betFor'],
+                betAgainst: fightHistDict[i]['betAgainst'],
+                winLose: fightHistDict[i]['winLose']
+            });
         }
         $('#fighter2').bootstrapTable({
             columns: [{
@@ -97,6 +111,19 @@
             data: fightHistory
         })
     });
+    //query the server to check if the fight displayed is the current fight
+    //if not, reload the page. Probably could just make use of the above code
+    //instead of having it refresh.
+    function CheckNewFight() {
+        console.log($.fightNumber)
+        $.get("newFight", {fightId: $.fightNumber}, function(isNewFight){
+            if(isNewFight['new']== true){
+                window.location.reload();
+                
+            }
+        })
+    }
+    var checkInterval = setInterval(function () { CheckNewFight($.fightNumber); },10000);
 </script>
 
 {%endblock%}

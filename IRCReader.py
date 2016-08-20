@@ -115,6 +115,8 @@ while 1:
     if readBuffer.find(' wins! Payouts to') != -1 and midfight == False and newMatch == True:
         winner= readBuffer[readBuffer.find('#saltybet :') + 11:readBuffer.find(' wins! Payouts to')]
         
+        print winner + ' Won!'
+
         RecordFightToDB(fighter1,fighter2,fight,winner)
         newMatch = False
        

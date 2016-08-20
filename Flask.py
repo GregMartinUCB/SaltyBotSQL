@@ -27,6 +27,8 @@ app.config.update(dict(
 ))
 app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 
+fightId = None
+
 #arguement is a SQLAlchemy row object, returns array of dictionaries
 def FightHistoryToJson(fighterData):
     #Finds all fights that given fighter was in
@@ -72,7 +74,7 @@ def show_entries():
 @app.route('/fightData')
 def GetFightData():
 
-    currentFight = db_session.query(Fight).filter_by(currentFight = 1).first()
+    currentFight = db_session.query(Fight).order_by(Fight.id.desc()).first()
     fighter = request.args.get('fighter', 0, type = int)
 
     if fighter == 1:
@@ -85,7 +87,8 @@ def GetFightData():
     jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
                     'averageBetRatio': fighterData.betRatio,
                     'streak': fighterData.streak,
-                    'fightHistory':history}
+                    'fightHistory':history,
+                    'fightNumber':currentFight.id}
     return jsonify(jsonToSend)
     
 @app.route('/testFight')
@@ -104,8 +107,19 @@ def TestFight():
     jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
                     'averageBetRatio': fighterData.betRatio,
                     'streak': fighterData.streak,
-                    'fightHistory':history}
+                    'fightHistory':history,
+                    'fightNumber':currentFight.id}
     return jsonify(jsonToSend)
+
+@app.route('/newFight')
+def IsNewFight():
+
+    fightId = request.args.get('fightId',0, type = int)
+    currentFight = db_session.query(Fight).order_by(Fight.id.desc()).first()
+    if(fightId == currentFight.id):
+        return jsonify({'new':False})
+    else:
+        return jsonify({'new':True})
     
 if __name__ == "__main__":
     app.run(host='0.0.0.0')

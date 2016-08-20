@@ -21,7 +21,6 @@ class Fighter(Base):
 class Fight(Base):
     __tablename__ = 'Fight'
     id = Column(Integer, primary_key=True)
-    currentFight = Column(Boolean())
     time = Column(DateTime())
     bet1 = Column(Integer())
     bet2 = Column(Integer())

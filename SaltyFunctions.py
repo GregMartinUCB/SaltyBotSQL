@@ -14,9 +14,7 @@ from database import db_session
 
 def RecordFightToDB(fighter1,fighter2,fight,Winner):
     
-    #set current fight to false.
-    fight.currentFight = False
-
+    
     #Identify winner and save as foreign key
     if Winner == fighter1.name:
         fight.winner = fighter1
@@ -193,10 +191,9 @@ def FindStreak(player1String, player2String):
         streak1 = int(player1String[start1:end1])
         streak2 = int(player2String[start2:end2])
     except:
-        print Exception.message
-        print ''
-        print player1String[start1:end1]
-        print player1String[start1:end1]
+        print ('Start and stop indecies, if -1 string.find found nothing:\n'
+               + str(start1) + ' ' + str(end1))
+        print str(start2) + ' ' + str(end2)
         return
 
     return streak1, streak2
