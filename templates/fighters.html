@@ -38,13 +38,15 @@
         }
         var fightHistDict = fighter1Data['fightHistory']
         var fightHistory = []
-        for (i = 0; i < fightHistDict.length; i++) {
-            fightHistory.push({
-                name: fightHistDict[i]['opponentName'],
-                betFor: fightHistDict[i]['betFor'],
-                betAgainst: fightHistDict[i]['betAgainst'],
-                winLose: fightHistDict[i]['winLose']
-            })
+        if (fightHistDict != null) {
+            for (i = 0; i < fightHistDict.length; i++) {
+                fightHistory.push({
+                    name: fightHistDict[i]['opponentName'],
+                    betFor: fightHistDict[i]['betFor'],
+                    betAgainst: fightHistDict[i]['betAgainst'],
+                    winLose: fightHistDict[i]['winLose']
+                })
+            }
         }
         console.log((fightHistory[0]))
 
@@ -84,13 +86,15 @@
         $.fightNumber = fighter2Data['fightNumber'];
         console.log(fighter2Data['fightNumber']);
         var fightHistory = [];
-        for (i = 0; i < fightHistDict.length; i++) {
-            fightHistory.push({
-                name: fightHistDict[i]['opponentName'],
-                betFor: fightHistDict[i]['betFor'],
-                betAgainst: fightHistDict[i]['betAgainst'],
-                winLose: fightHistDict[i]['winLose']
-            });
+        if (fightHistDict != null) {
+            for (i = 0; i < fightHistDict.length; i++) {
+                fightHistory.push({
+                    name: fightHistDict[i]['opponentName'],
+                    betFor: fightHistDict[i]['betFor'],
+                    betAgainst: fightHistDict[i]['betAgainst'],
+                    winLose: fightHistDict[i]['winLose']
+                });
+            }
         }
         $('#fighter2').bootstrapTable({
             columns: [{

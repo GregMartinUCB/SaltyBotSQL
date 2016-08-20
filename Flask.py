@@ -30,10 +30,10 @@ app.config.from_envvar('FLASKR_SETTINGS', silent=True)
 fightId = None
 
 #arguement is a SQLAlchemy row object, returns array of dictionaries
-def FightHistoryToJson(fighterData):
+def FightHistoryToJson(fighterData, currentFightId):
     #Finds all fights that given fighter was in
     histories = db_session.query(Fight).filter(or_(Fight.fighter1_id ==fighterData.id,
-                                                    Fight.fighter2_id == fighterData.id))
+                                                    Fight.fighter2_id == fighterData.id)).filter(Fight.id != currentFightId)
     
     appendedJsonHistory = []
     for fightHistory in histories:
@@ -82,7 +82,7 @@ def GetFightData():
     else:
         fighterData = db_session.query(Fighter).get(currentFight.fighter2_id)
 
-    history = FightHistoryToJson(fighterData)
+    history = FightHistoryToJson(fighterData, currentFight.id)
 
     jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
                     'averageBetRatio': fighterData.betRatio,
@@ -102,7 +102,7 @@ def TestFight():
     else:
         fighterData = db_session.query(Fighter).get(currentFight.fighter2_id)
 
-    history = FightHistoryToJson(fighterData)
+    history = FightHistoryToJson(fighterData, currentFight.id)
 
     jsonToSend = {'name':fighterData.name, 'averageWinRatio':fighterData.winRate,
                     'averageBetRatio': fighterData.betRatio,
